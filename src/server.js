@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import pino from 'pino';
 import dotenv from 'dotenv';
+import contactRoutes from './routes/contactRoutes.js';
+
 
 dotenv.config();
 
@@ -11,7 +13,8 @@ export function setupServer() {
  
   app.use(cors());
 
-  
+  app.use('/contacts', contactRoutes);
+
   const logger = pino();
   app.use((req, res, next) => {
     logger.info(`${req.method} ${req.url}`);
@@ -30,4 +33,14 @@ export function setupServer() {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
+  
+
+
+  app.get('/students', async (req, res) => {
+
+});
+
+app.get('/students/:studentId', async (req, res) => {
+
+});
 }
