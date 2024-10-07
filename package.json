@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "eslint src/**/*.js",
     "start": "node ./src/index.js",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "build": "npm install && npm start"
   },
   "keywords": [],
   "author": "Vitaliy Shram <vitalya-shramko@yandex.ru>",
