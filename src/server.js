@@ -10,9 +10,10 @@ dotenv.config();
 export function setupServer() {
   const app = express();
 
- 
-  app.use(cors());
+   app.use(cors());
 
+  app.use(express.json());
+  
   app.use('/contacts', contactRoutes);
 
   const logger = pino();
@@ -33,14 +34,5 @@ export function setupServer() {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
-  
 
-
-  app.get('/students', async (req, res) => {
-
-});
-
-app.get('/students/:studentId', async (req, res) => {
-
-});
-}
+};
