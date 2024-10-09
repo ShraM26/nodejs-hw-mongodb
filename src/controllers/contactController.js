@@ -2,9 +2,9 @@ import Contact from '../models/contactModel.js';
 
 export const getAllContacts = async (req, res) => {
     try {
-        console.log('Fetching all contacts...'); // Лог для проверки
-        const contacts = await Contact.find();  // Выполняем запрос к базе данных
-        console.log('Contacts found:', contacts); // Логируем найденные контакты
+        console.log('Fetching all contacts...'); 
+        const contacts = await Contact.find();  
+        console.log('Contacts found:', contacts); 
         
         if (contacts.length === 0) {
             return res.status(404).json({
