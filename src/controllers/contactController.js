@@ -16,10 +16,10 @@ export const getAllContacts = async (req, res) => {
         res.status(200).json({
             status: 200,
             message: 'Successfully found contacts!',
-            data: contacts,  // Возвращаем данные в формате JSON
+            data: contacts,  
         });
     } catch (error) {
-        console.error('Error fetching contacts:', error); // Логируем ошибку
+        console.error('Error fetching contacts:', error); 
         res.status(500).json({
             status: 500,
             message: 'Failed to fetch contacts',
