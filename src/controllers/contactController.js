@@ -1,16 +1,17 @@
 import Contact from '../models/contactModel.js';
 import createError from 'http-errors';
 import { createNewContact, updateContactById, deleteContactById } from '../services/contacts.js';
+
 // Получение всех контактов
 export const getAllContacts = async (req, res) => {
     try {
         const contacts = await Contact.find();
         if (contacts.length === 0) {
-            return res.status(404).json({ message: 'No contacts found' });
+            return res.status(404).json({ status: 404, message: 'No contacts found' });
         }
-        res.status(200).json({ data: contacts });
+        res.status(200).json({ status: 200, message: 'Contacts retrieved successfully', data: contacts });
     } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch contacts', error: error.message });
+        res.status(500).json({ status: 500, message: 'Failed to fetch contacts', error: error.message });
     }
 };
 
@@ -66,6 +67,27 @@ export const updateContact = async (req, res, next) => {
         message: "Successfully patched a contact!",
         data: updatedContact,
     });
+};
+// Обновление существующего контакта 
+export const patchContact = async (req, res, next) => {
+    const { contactId } = req.params;
+    const updateData = req.body;
+
+    try {
+        const updatedContact = await Contact.findByIdAndUpdate(contactId, updateData, { new: true, runValidators: true });
+
+        if (!updatedContact) {
+            return next(createError(404, 'Contact not found'));
+        }
+
+        res.status(200).json({
+            status: 200,
+            message: "Contact updated successfully",
+            data: updatedContact,
+        });
+    } catch (error) {
+        next(error);
+    }
 };
 
 // Удаление контакта

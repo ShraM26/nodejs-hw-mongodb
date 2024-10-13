@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllContacts, getContactById, createContact, updateContact, deleteContact } from '../controllers/contactController.js';
+import { getAllContacts, getContactById, createContact, updateContact, patchContact, deleteContact } from '../controllers/contactController.js';
 import ctrlWrapper from '../utils/ctrlWrapper.js';
 
 const router = express.Router();
@@ -12,7 +12,8 @@ router.get('/:contactId', ctrlWrapper( getContactById));
 
 // Маршрут для создания нового контакта
 router.post('/', ctrlWrapper( createContact));
-
+// Маршрут для часткового оновлення контакту
+router.patch('/:contactId', ctrlWrapper(patchContact));
 // Маршрут для обновления существующего контакта
 router.put('/:contactId', ctrlWrapper( updateContact));
 
