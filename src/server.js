@@ -21,13 +21,13 @@ export function setupServer() {
     logger.info(`${req.method} ${req.url}`);
     next();
   });
+   app.use(notFoundHandler);
 
-  app.use((req, res, next) => {
-    res.status(404).json({ message: 'Not found' });
-  });
-
-  app.use(notFoundHandler); 
-  app.use(errorHandler);
+   app.use(errorHandler);
+  
+  // app.use((req, res, next) => {
+  //   res.status(404).json({ message: 'Not found' });
+  // });
   
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
