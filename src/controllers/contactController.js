@@ -3,15 +3,57 @@ import createError from 'http-errors';
 import { createNewContact, updateContactById, deleteContactById } from '../services/contacts.js';
 
 // Получение всех контактов
-export const getAllContacts = async (req, res) => {
+export const getAllContacts = async (req, res, next) => {
     try {
-        const contacts = await Contact.find();
-        if (contacts.length === 0) {
-            return res.status(404).json({ status: 404, message: 'No contacts found' });
+        // Отримуємо параметри пагінації, сортування та фільтрації із запиту
+        const { page = 1, perPage = 10, sortBy = 'name', sortOrder = 'asc', type, isFavourite } = req.query;
+        const pageNumber = parseInt(page, 10) || 1;
+        const itemsPerPage = parseInt(perPage, 10) || 10;
+        const skip = (pageNumber - 1) * itemsPerPage;
+
+        // Визначаємо порядок сортування
+        const order = sortOrder === 'desc' ? -1 : 1;
+        const sortOptions = { [sortBy]: order };
+
+        // Визначаємо фільтрацію
+        const filterOptions = {};
+        if (type) {
+            filterOptions.contactType = type;
         }
-        res.status(200).json({ status: 200, message: 'Contacts retrieved successfully', data: contacts });
+        if (isFavourite !== undefined) {
+            filterOptions.isFavourite = isFavourite === 'true'; // Перетворюємо на булеве значення
+        }
+
+        // Отримуємо загальну кількість контактів із застосуванням фільтрації
+        const totalItems = await Contact.countDocuments(filterOptions);
+
+        // Отримуємо контакти із застосуванням пагінації, сортування та фільтрації
+        const contacts = await Contact.find(filterOptions)
+            .skip(skip)
+            .limit(itemsPerPage)
+            .sort(sortOptions);
+
+        if (!contacts.length) {
+            throw createError(404, 'No contacts found');
+        }
+
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+        res.status(200).json({
+            status: 200,
+            message: 'Successfully found contacts!',
+            data: {
+                data: contacts,
+                page: pageNumber,
+                perPage: itemsPerPage,
+                totalItems,
+                totalPages,
+                hasPreviousPage: pageNumber > 1,
+                hasNextPage: pageNumber < totalPages
+            }
+        });
     } catch (error) {
-        res.status(500).json({ status: 500, message: 'Failed to fetch contacts', error: error.message });
+        next(error);
     }
 };
 
