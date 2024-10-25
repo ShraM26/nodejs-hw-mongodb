@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllContacts, getContactById, createContact, updateContact, patchContact, deleteContact } from '../controllers/contactController.js';
+import { getAllContacts, getContactById, createContact, patchContact, deleteContact } from '../controllers/contactController.js';
 import ctrlWrapper from '../utils/ctrlWrapper.js';
 import validateBody from '../middlewares/validateBody.js';
 import { contactSchema, updateContactSchema } from '../utils/contactValidation.js';
@@ -24,7 +24,7 @@ router.post('/', validateBody(contactSchema), ctrlWrapper(createContact));
 router.patch('/:contactId', isValidId, validateBody(updateContactSchema), ctrlWrapper(patchContact));
 
 // Маршрут для обновления существующего контакта
-router.put('/:contactId', isValidId, validateBody(updateContactSchema), ctrlWrapper(updateContact));
+router.put('/:contactId', isValidId, validateBody(updateContactSchema), ctrlWrapper(patchContact));
 
 // Маршрут для удаления контакта
 router.delete('/:contactId', isValidId, ctrlWrapper(deleteContact));
