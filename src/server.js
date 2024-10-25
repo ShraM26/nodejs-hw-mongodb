@@ -5,6 +5,9 @@ import dotenv from 'dotenv';
 import contactRoutes from './routes/contactRoutes.js';
 import errorHandler from './middlewares/errorHandler.js';
 import notFoundHandler from './middlewares/notFoundHandler.js';
+import authRoutes from './routes/auth.js';
+import cookieParser from 'cookie-parser';
+
 
 dotenv.config();
 
@@ -33,4 +36,9 @@ export function setupServer() {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
+
+  // маршрут для аутентифікації
+  app.use('/auth', authRoutes);
+
+  app.use(cookieParser()); // Додамо middleware для парсингу cookies
 }

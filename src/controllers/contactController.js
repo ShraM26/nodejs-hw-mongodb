@@ -1,91 +1,62 @@
-import Contact from '../models/contactModel.js';
+
 import createError from 'http-errors';
 import { createNewContact, updateContactById, deleteContactById } from '../services/contacts.js';
 
-// Получение всех контактов
+// Отримання всіх контактів
 export const getAllContacts = async (req, res, next) => {
+    const userId = req.user._id; // Отримуємо userId з токена
+    const query = req.query; // Отримуємо параметри запиту
+
     try {
-        // Отримуємо параметри пагінації, сортування та фільтрації із запиту
-        const { page = 1, perPage = 10, sortBy = 'name', sortOrder = 'asc', type, isFavourite } = req.query;
-        const pageNumber = parseInt(page, 10) || 1;
-        const itemsPerPage = parseInt(perPage, 10) || 10;
-        const skip = (pageNumber - 1) * itemsPerPage;
-
-        // Визначаємо порядок сортування
-        const order = sortOrder === 'desc' ? -1 : 1;
-        const sortOptions = { [sortBy]: order };
-
-        // Визначаємо фільтрацію
-        const filterOptions = {};
-        if (type) {
-            filterOptions.contactType = type;
-        }
-        if (isFavourite !== undefined) {
-            filterOptions.isFavourite = isFavourite === 'true'; // Перетворюємо на булеве значення
-        }
-
-        // Отримуємо загальну кількість контактів із застосуванням фільтрації
-        const totalItems = await Contact.countDocuments(filterOptions);
-
-        // Отримуємо контакти із застосуванням пагінації, сортування та фільтрації
-        const contacts = await Contact.find(filterOptions)
-            .skip(skip)
-            .limit(itemsPerPage)
-            .sort(sortOptions);
-
-        if (!contacts.length) {
-            throw createError(404, 'No contacts found');
-        }
-
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
-
+        const { contacts, totalItems, pageNumber, itemsPerPage } = await getAllContacts(userId, query);
         res.status(200).json({
             status: 200,
-            message: 'Successfully found contacts!',
-            data: {
-                data: contacts,
-                page: pageNumber,
-                perPage: itemsPerPage,
-                totalItems,
-                totalPages,
-                hasPreviousPage: pageNumber > 1,
-                hasNextPage: pageNumber < totalPages
-            }
+            message: 'Contacts retrieved successfully',
+            data: { contacts, totalItems, pageNumber, itemsPerPage },
         });
     } catch (error) {
         next(error);
     }
 };
 
-// Получение контакта по ID
-
+// Отримання контакту користувача за ID
 export const getContactById = async (req, res, next) => {
+    const { contactId } = req.params;
+    const userId = req.user._id;
+
     try {
-        const { contactId } = req.params;
-        const contact = await Contact.findById(contactId);
-
+        const contact = await getContactById(userId, contactId);
         if (!contact) {
-            throw createError(404, 'Contact not found');
+            return next(createError(404, 'Contact not found'));
         }
-
         res.status(200).json({
             status: 200,
-            message: `Successfully found contact with id ${contactId}!`,
+            message: 'Contact retrieved successfully',
             data: contact,
         });
     } catch (error) {
         next(error);
     }
 };
-// Создание нового контакта
+
+// Створення нового контакту
 export const createContact = async (req, res, next) => {
     const { name, phoneNumber, email, isFavourite, contactType } = req.body;
 
+    // Перевіряємо обов'язкові поля
     if (!name || !phoneNumber || !contactType) {
         throw createError(400, 'Missing required fields: name, phoneNumber, or contactType');
     }
 
-    const newContact = await createNewContact({ name, phoneNumber, email, isFavourite, contactType });
+    // Додаємо поле userId із req.user._id
+    const newContact = await createNewContact({ 
+        name, 
+        phoneNumber, 
+        email, 
+        isFavourite, 
+        contactType, 
+        userId: req.user._id // Додаємо userId
+    });
 
     res.status(201).json({
         status: 201,
@@ -93,31 +64,15 @@ export const createContact = async (req, res, next) => {
         data: newContact,
     });
 };
-// Обновление существующего контакта
-export const updateContact = async (req, res, next) => {
-    const { contactId } = req.params;
-    const updateData = req.body;
 
-    const updatedContact = await updateContactById(contactId, updateData);
-
-    if (!updatedContact) {
-        throw createError(404, 'Contact not found');
-    }
-
-    res.status(200).json({
-        status: 200,
-        message: "Successfully patched a contact!",
-        data: updatedContact,
-    });
-};
-// Обновление существующего контакта 
+// Оновлення контакту користувача за ID
 export const patchContact = async (req, res, next) => {
     const { contactId } = req.params;
+    const userId = req.user._id;
     const updateData = req.body;
 
     try {
-        const updatedContact = await Contact.findByIdAndUpdate(contactId, updateData, { new: true, runValidators: true });
-
+        const updatedContact = await updateContactById(userId, contactId, updateData);
         if (!updatedContact) {
             return next(createError(404, 'Contact not found'));
         }
@@ -132,15 +87,19 @@ export const patchContact = async (req, res, next) => {
     }
 };
 
-// Удаление контакта
+// Видалення контакту користувача за ID
 export const deleteContact = async (req, res, next) => {
     const { contactId } = req.params;
+    const userId = req.user._id;
 
-    const deletedContact = await deleteContactById(contactId);
+    try {
+        const deletedContact = await deleteContactById(userId, contactId);
+        if (!deletedContact) {
+            return next(createError(404, 'Contact not found'));
+        }
 
-    if (!deletedContact) {
-        throw createError(404, 'Contact not found');
+        res.status(204).send(); // Відповідь без тіла для успішного видалення
+    } catch (error) {
+        next(error);
     }
-
-    res.status(204).send();
 };
