@@ -1,5 +1,5 @@
 import createError from 'http-errors';
-import { createUser, authenticateUser, refreshUserSession, logoutUserSession } from '../services/auth.js';
+import { createUser, authenticateUser, refreshUserSession, logoutUserSession } from '../services/authService.js';
 
 // Контролер для реєстрації нового користувача
 export const registerUser = async (req, res, next) => {
