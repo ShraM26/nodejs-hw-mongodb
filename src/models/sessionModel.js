@@ -1,35 +1,32 @@
 import mongoose from 'mongoose';
 
-const sessionSchema = new mongoose.Schema(
-  {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'user',
-      required: true,
-    },
-    accessToken: {
-      type: String,
-      required: true,
-    },
-    refreshToken: {
-      type: String,
-      required: true,
-    },
-    accessTokenValidUntil: {
-      type: Date,
-      required: true,
-    },
-    refreshTokenValidUntil: {
-      type: Date,
-      required: true,
-    },
+const sessionSchema = new mongoose.Schema({
+  userId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true 
   },
-  {
-    timestamps: true, // Додає поля createdAt і updatedAt автоматично
-    versionKey: false,
-  }
-);
+  accessToken: { 
+    type: String, 
+    required: true 
+  },
+  refreshToken: { 
+    type: String, 
+    required: true 
+  },
+  accessTokenValidUntil: { 
+    type: Date, 
+    required: true 
+  },
+  refreshTokenValidUntil: { 
+    type: Date, 
+    required: true 
+  },
+}, {
+  timestamps: true,
+  versionKey: false,
+});
 
-const Session = mongoose.model('session', sessionSchema);
+const Session = mongoose.model('Session', sessionSchema);
 
 export default Session;
