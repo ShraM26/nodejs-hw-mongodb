@@ -1,6 +1,12 @@
 
 import createError from 'http-errors';
-import { createNewContact, updateContactById, deleteContactById } from '../services/contacts.js';
+import { 
+    createNewContact, 
+    getAllContacts as fetchAllContacts, 
+    getContactById as fetchContactById, 
+    updateContactById as modifyContactById, 
+    deleteContactById as removeContactById 
+} from '../services/contacts.js';
 
 // Отримання всіх контактів
 export const getAllContacts = async (req, res, next) => {
@@ -8,7 +14,7 @@ export const getAllContacts = async (req, res, next) => {
     const query = req.query; // Отримуємо параметри запиту
 
     try {
-        const { contacts, totalItems, pageNumber, itemsPerPage } = await getAllContacts(userId, query);
+        const { contacts, totalItems, pageNumber, itemsPerPage } = await fetchAllContacts(userId, query);
         res.status(200).json({
             status: 200,
             message: 'Contacts retrieved successfully',
@@ -25,7 +31,7 @@ export const getContactById = async (req, res, next) => {
     const userId = req.user._id;
 
     try {
-        const contact = await getContactById(userId, contactId);
+        const contact = await fetchContactById(userId, contactId);
         if (!contact) {
             return next(createError(404, 'Contact not found'));
         }
@@ -49,20 +55,24 @@ export const createContact = async (req, res, next) => {
     }
 
     // Додаємо поле userId із req.user._id
-    const newContact = await createNewContact({ 
-        name, 
-        phoneNumber, 
-        email, 
-        isFavourite, 
-        contactType, 
-        userId: req.user._id // Додаємо userId
-    });
+    try {
+        const newContact = await createNewContact({ 
+            name, 
+            phoneNumber, 
+            email, 
+            isFavourite, 
+            contactType, 
+            userId: req.user._id // Додаємо userId
+        });
 
-    res.status(201).json({
-        status: 201,
-        message: "Successfully created a contact!",
-        data: newContact,
-    });
+        res.status(201).json({
+            status: 201,
+            message: "Successfully created a contact!",
+            data: newContact,
+        });
+    } catch (error) {
+        next(error);
+    }
 };
 
 // Оновлення контакту користувача за ID
@@ -72,7 +82,7 @@ export const patchContact = async (req, res, next) => {
     const updateData = req.body;
 
     try {
-        const updatedContact = await updateContactById(userId, contactId, updateData);
+        const updatedContact = await modifyContactById(userId, contactId, updateData);
         if (!updatedContact) {
             return next(createError(404, 'Contact not found'));
         }
@@ -93,7 +103,7 @@ export const deleteContact = async (req, res, next) => {
     const userId = req.user._id;
 
     try {
-        const deletedContact = await deleteContactById(userId, contactId);
+        const deletedContact = await removeContactById(userId, contactId);
         if (!deletedContact) {
             return next(createError(404, 'Contact not found'));
         }

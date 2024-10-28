@@ -1,39 +1,39 @@
 import jwt from 'jsonwebtoken';
 import createError from 'http-errors';
 import User from '../models/userModel.js';
-
-const { ACCESS_SECRET_KEY } = process.env;
+import Session from '../models/sessionModel.js';
 
 const authenticate = async (req, res, next) => {
-  try {
-    const { authorization = '' } = req.headers;
-    const [bearer, token] = authorization.split(' ');
+    try {
+        const authHeader = req.headers.authorization;
 
-    // Перевірка, чи заголовок містить Bearer токен
-    if (bearer !== 'Bearer' || !token) {
-      throw createError(401, 'Authorization token is missing');
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            throw createError(401, 'Authorization token missing or malformed');
+        }
+
+        const token = authHeader.split(' ')[1];
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const session = await Session.findOne({ accessToken: token, userId: decoded.userId });
+
+        if (!session || new Date() > session.accessTokenValidUntil) {
+            throw createError(401, 'Access token expired');
+        }
+
+        const user = await User.findById(decoded.userId);
+        if (!user) {
+            throw createError(401, 'User not found');
+        }
+
+        req.user = user;
+        next();
+    } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+            next(createError(401, 'Access token expired'));
+        } else {
+            next(error);
+        }
     }
-
-    // Перевірка валідності токену
-    const { id } = jwt.verify(token, ACCESS_SECRET_KEY);
-    const user = await User.findById(id);
-
-    // Якщо користувач не знайдений
-    if (!user) {
-      throw createError(401, 'User not found');
-    }
-
-    // Додаємо користувача до запиту
-    req.user = user;
-    next();
-  } catch (error) {
-    // Перевірка на протермінування токену
-    if (error.name === 'TokenExpiredError') {
-      next(createError(401, 'Access token expired'));
-    } else {
-      next(createError(401, 'Invalid access token'));
-    }
-  }
 };
 
 export default authenticate;
