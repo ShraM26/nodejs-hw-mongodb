@@ -1,26 +1,38 @@
 import express from 'express';
-import mongoose from 'mongoose';
-import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import pino from 'pino';
 import dotenv from 'dotenv';
-import authRoutes from './routes/authRoutes.js';
+import cookieParser from 'cookie-parser'; // Додайте імпорт cookie-parser
 import contactRoutes from './routes/contactRoutes.js';
+import authRoutes from './routes/authRoutes.js'; // Додайте імпорт authRoutes
+import errorHandler from './middlewares/errorHandler.js';
+import notFoundHandler from './middlewares/notFoundHandler.js';
 
 dotenv.config();
 
-const app = express();
+export function setupServer() {
+  const app = express();
 
-app.use(express.json());
-app.use(cookieParser());
+  app.use(cors());
+  app.use(express.json());
+  app.use(cookieParser()); // Додайте middleware для парсингу куків
 
-app.use('/auth', authRoutes);
-app.use('/contacts', contactRoutes);
+  // Додайте маршрути для аутентифікації
+  app.use('/auth', authRoutes);
+  // Додайте маршрути для контактів
+  app.use('/contacts', contactRoutes);  
 
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`)))
-  .catch(error => console.log(error.message));
+  const logger = pino();
+  app.use((req, res, next) => {
+    logger.info(`${req.method} ${req.url}`);
+    next();
+  });
 
-app.use((error, req, res, next) => {
-  res.status(error.status || 500).json({ message: error.message });
-});
+  app.use(notFoundHandler); // Справжня обробка 404
+  app.use(errorHandler);     // Обробка інших помилок
 
-export default app;
+  const PORT = process.env.PORT || 3000; // Значення за замовчуванням для порту
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
