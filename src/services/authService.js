@@ -22,8 +22,16 @@ export const loginUser = async ({ email, password }) => {
   }
   await Session.deleteMany({ userId: user._id });
 
-  const accessToken = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
-  const refreshToken = jwt.sign({ userId: user._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '30d' });
+  const accessToken = jwt.sign(
+    { userId: user._id },
+    process.env.ACCESS_TOKEN_SECRET, // Впевніться, що ця змінна визначена
+    { expiresIn: '15m' }
+  );
+  const refreshToken = jwt.sign(
+    { userId: user._id },
+    process.env.REFRESH_TOKEN_SECRET, // Впевніться, що ця змінна визначена
+    { expiresIn: '30d' }
+  );
 
   const session = new Session({
     userId: user._id,
@@ -43,8 +51,16 @@ export const refreshSession = async (refreshToken) => {
     throw createError(401, 'Refresh token expired');
   }
   const userId = session.userId;
-  const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
-  const newRefreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '30d' });
+  const accessToken = jwt.sign(
+    { userId },
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: '15m' }
+  );
+  const newRefreshToken = jwt.sign(
+    { userId },
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: '30d' }
+  );
 
   const newSession = new Session({
     userId,
