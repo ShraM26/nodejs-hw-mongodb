@@ -1,70 +1,26 @@
 import express from 'express';
-import cors from 'cors';
-import pino from 'pino';
-import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
-import contactRoutes from './routes/contactRoutes.js';
+import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes.js';
-import errorHandler from './middlewares/errorHandler.js';
-import notFoundHandler from './middlewares/notFoundHandler.js';
-import authenticate from './middlewares/authenticate.js';
+import contactRoutes from './routes/contactRoutes.js';
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+const app = express();
 
-// MongoDB Connection Initialization
-const initMongoConnection = async () => {
-  const { MONGODB_USER, MONGODB_PASSWORD, MONGODB_URL, MONGODB_DB } = process.env;
-  const uri = `mongodb+srv://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_URL}/${MONGODB_DB}?retryWrites=true&w=majority`;
+app.use(express.json());
+app.use(cookieParser());
 
-  try {
-    await mongoose.connect(uri);
-    console.log('MongoDB connection established successfully');
-  } catch (error) {
-    console.error('Failed to connect to MongoDB:', error);
-    process.exit(1); // Exit process if database connection fails
-  }
-};
+app.use('/auth', authRoutes);
+app.use('/contacts', contactRoutes);
 
-// Main Server Setup
-const setupServer = () => {
-  const app = express();
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`)))
+  .catch(error => console.log(error.message));
 
-  // Middleware Setup
-  app.use(cors());
-  app.use(express.json());
-  app.use(cookieParser());
+app.use((error, req, res, next) => {
+  res.status(error.status || 500).json({ message: error.message });
+});
 
-  // Logger Setup
-  const logger = pino();
-  app.use((req, res, next) => {
-    logger.info(`${req.method} ${req.url}`);
-    next();
-  });
-
-  // Routes
-  app.use('/auth', authRoutes);
-  
-  // Apply `authenticate` middleware to protect all contact routes
-  app.use('/contacts', authenticate, contactRoutes);
-
-  // 404 and Error Handling
-  app.use(notFoundHandler);
-  app.use(errorHandler);
-
-  // Start Server
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-};
-
-// Initialize Database and Start Server
-initMongoConnection()
-  .then(() => setupServer())
-  .catch((error) => {
-    console.error('Failed to initialize server:', error);
-  });
-
-export { setupServer };
+export default app;

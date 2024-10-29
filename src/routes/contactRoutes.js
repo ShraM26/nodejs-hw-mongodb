@@ -1,8 +1,8 @@
 import express from 'express';
 import {
-  createContact,
   getContacts,
   getContactById,
+  createContact,
   updateContact,
   deleteContact,
 } from '../controllers/contactController.js';
@@ -10,19 +10,12 @@ import authenticate from '../middlewares/authenticate.js';
 
 const router = express.Router();
 
-// Create a new contact
-router.post('/', authenticate, createContact);
+router.use(authenticate);
 
-// Get all contacts for the authenticated user
-router.get('/', authenticate, getContacts);
-
-// Get a contact by ID for the authenticated user
-router.get('/:id', authenticate, getContactById);
-
-// Update a contact for the authenticated user
-router.put('/:id', authenticate, updateContact);
-
-// Delete a contact for the authenticated user
-router.delete('/:id', authenticate, deleteContact);
+router.get('/', getContacts);
+router.get('/:id', getContactById);
+router.post('/', createContact);
+router.put('/:id', updateContact);
+router.delete('/:id', deleteContact);
 
 export default router;
