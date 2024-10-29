@@ -3,8 +3,24 @@ import Contact from '../models/contactModel.js';
 
 export const getContacts = async (req, res, next) => {
   try {
-    const contacts = await Contact.find({ userId: req.user._id });
-    res.json({ status: 200, data: contacts });
+    const { page = 1, limit = 10 } = req.query;
+    const contacts = await Contact.find({ userId: req.user._id })
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+
+    const totalContacts = await Contact.countDocuments({ userId: req.user._id });
+    const totalPages = Math.ceil(totalContacts / limit);
+
+    res.json({
+      status: 200,
+      data: contacts,
+      pagination: {
+        totalContacts,
+        totalPages,
+        currentPage: Number(page),
+        limit: Number(limit),
+      },
+    });
   } catch (error) {
     next(error);
   }

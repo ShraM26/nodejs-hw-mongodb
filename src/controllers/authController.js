@@ -1,4 +1,3 @@
-
 import { registerUser, loginUser, refreshSession, logoutUser } from '../services/authService.js';
 
 export const register = async (req, res, next) => {
@@ -21,7 +20,7 @@ export const login = async (req, res, next) => {
     res.status(200).json({
       status: 200,
       message: 'Successfully logged in an user!',
-      data: { accessToken, refreshToken },
+      data: { accessToken },
     });
   } catch (error) {
     next(error);
