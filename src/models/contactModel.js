@@ -29,7 +29,12 @@ const contactSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+     toJSON: { 
+      versionKey: false  // Приховує поле __v
+    }
+   }
 );
 
 const Contact = mongoose.model('Contact', contactSchema);

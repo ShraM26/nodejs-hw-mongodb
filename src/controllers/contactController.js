@@ -79,3 +79,21 @@ export const deleteContact = async (req, res, next) => {
     next(error);
   }
 };
+
+export const patchContact = async (req, res, next) => {
+  try {
+    const updatedContact = await Contact.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user._id },
+      req.body,
+      { new: true, runValidators: true } // Запуск валідації при оновленні
+    );
+
+    if (!updatedContact) {
+      throw createError(404, 'Contact not found');
+    }
+    
+    res.json({ status: 200, message: 'Contact updated successfully', data: updatedContact });
+  } catch (error) {
+    next(error);
+  }
+};
