@@ -1,7 +1,5 @@
 import Contact from '../models/contactModel.js';
 
-
-// Отримання всіх контактів
 export const getAllContacts = async (userId, query) => {
     const { page = 1, perPage = 10, sortBy = 'name', sortOrder = 'asc', type, isFavourite } = query;
     const pageNumber = parseInt(page, 10) || 1;
@@ -24,18 +22,15 @@ export const getAllContacts = async (userId, query) => {
     return { contacts, totalItems, pageNumber, itemsPerPage };
 };
 
-// Отримання контакту користувача за ID
 export const getContactById = async (userId, contactId) => {
     return await Contact.findOne({ _id: contactId, userId }); // Шукаємо по _id і userId
 };
 
-// Створення нового контакту
 export const createNewContact = async (contactData) => {
     const newContact = new Contact(contactData);
     return await newContact.save();
 };
 
-// Оновлення контакту користувача за ID
 export const updateContactById = async (userId, contactId, updateData) => {
     return await Contact.findOneAndUpdate(
         { _id: contactId, userId }, // Перевірка по userId
@@ -44,7 +39,6 @@ export const updateContactById = async (userId, contactId, updateData) => {
     );
 };
 
-// Видалення контакту користувача за ID
 export const deleteContactById = async (userId, contactId) => {
     return await Contact.findOneAndDelete({ _id: contactId, userId }); // Перевірка по userId
 };

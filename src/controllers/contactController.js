@@ -1,4 +1,5 @@
 import createError from 'http-errors';
+import { createNewContact } from '../services/contacts.js';
 import Contact from '../models/contactModel.js';
 
 export const getContacts = async (req, res, next) => {
@@ -40,11 +41,14 @@ export const getContactById = async (req, res, next) => {
 
 export const createContact = async (req, res, next) => {
   try {
-    const newContact = new Contact({ ...req.body, userId: req.user._id });
-    await newContact.save();
+    const newContact = await createNewContact({ ...req.body, userId: req.user._id });
     res.status(201).json({ status: 201, message: 'Contact created successfully', data: newContact });
   } catch (error) {
-    next(error);
+    if (error.code === 11000) {  // 11000 - код помилки для дублювання
+      next(createError(400, 'Contact with this email already exists'));
+    } else {
+      next(error);
+    }
   }
 };
 

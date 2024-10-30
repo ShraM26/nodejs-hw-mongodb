@@ -9,7 +9,6 @@ const contactSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
     },
     phone: {
       type: String,
@@ -18,6 +17,15 @@ const contactSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
+      required: true,
+    },
+    isFavourite: {
+      type: Boolean,
+      default: false,
+    },
+    contactType: {
+      type: String,
+      enum: ['work', 'home', 'personal'],
       required: true,
     },
   },
