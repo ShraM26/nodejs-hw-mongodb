@@ -1,4 +1,4 @@
-import { registerUser, loginUser, refreshSession, logoutUser } from '../services/authService.js';
+import { registerUser, loginUser, refreshSession, logoutUser, sendResetEmailService,  resetPasswordService  } from '../services/authService.js';
 
 export const register = async (req, res, next) => {
   try {
@@ -46,6 +46,34 @@ export const logout = async (req, res, next) => {
     await logoutUser(req.cookies.refreshToken);
     res.clearCookie('refreshToken');
     res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const sendResetEmail = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    await sendResetEmailService(email);
+    res.status(200).json({
+      status: 200,
+      message: "Reset password email has been successfully sent.",
+      data: {}
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { token, password } = req.body;
+    await resetPasswordService(token, password);
+    res.status(200).json({
+      status: 200,
+      message: "Password has been successfully reset.",
+      data: {}
+    });
   } catch (error) {
     next(error);
   }

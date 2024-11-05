@@ -10,10 +10,12 @@ import {
 export const getContacts = async (req, res, next) => {
   try {
     const contactsData = await getAllContacts(req.user._id, req.query);
-
     res.json({
       status: 200,
-      data: contactsData.contacts,
+      data: contactsData.contacts.map(contact => ({
+        ...contact.toObject(),
+        photo: contact.photo || null,  // Перевірка наявності фото
+      })),
       totalContacts: contactsData.totalItems,
       currentPage: contactsData.pageNumber,
       limit: contactsData.itemsPerPage,
@@ -31,7 +33,7 @@ export const getContactById = async (req, res, next) => {
     if (!contact) {
       throw createError(404, 'Contact not found');
     }
-    res.json({ status: 200, data: contact });
+    res.json({ status: 200, data: { ...contact.toObject(), photo: contact.photo || null } });
   } catch (error) {
     next(error);
   }
@@ -39,10 +41,15 @@ export const getContactById = async (req, res, next) => {
 
 export const createContact = async (req, res, next) => {
   try {
-    const newContact = await createNewContact({ ...req.body, userId: req.user._id });
-    res.status(201).json({ status: 201, message: 'Contact created successfully', data: newContact });
+    const photo = req.file ? req.file.path : null;
+    const newContact = await createNewContact({ ...req.body, userId: req.user._id, photo });
+    res.status(201).json({
+      status: 201,
+      message: 'Contact created successfully',
+      data: { ...newContact.toObject(), photo: newContact.photo || null },
+    });
   } catch (error) {
-    if (error.code === 11000) {  // Код помилки для дублювання
+    if (error.code === 11000) {
       next(createError(400, 'Contact with this email already exists'));
     } else {
       next(error);
@@ -76,11 +83,17 @@ export const deleteContact = async (req, res, next) => {
 
 export const patchContact = async (req, res, next) => {
   try {
-    const updatedContact = await updateContactById(req.user._id, req.params.id, req.body);
+    const photo = req.file ? req.file.path : undefined;
+    const updatedData = photo ? { ...req.body, photo } : req.body;
+    const updatedContact = await updateContactById(req.user._id, req.params.id, updatedData);
     if (!updatedContact) {
       throw createError(404, 'Contact not found');
     }
-    res.json({ status: 200, message: 'Contact updated successfully', data: updatedContact });
+    res.json({
+      status: 200,
+      message: 'Contact updated successfully',
+      data: { ...updatedContact.toObject(), photo: updatedContact.photo || null },
+    });
   } catch (error) {
     next(error);
   }
