@@ -1,0 +1,30 @@
+tags:
+  - name: auth
+    description: User authentication
+summary: User registration
+operationId: registerUser
+description: |
+  This endpoint allows a new user to register with their email and password.
+  After successful registration, the user will receive a confirmation email.
+security: []
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          email:
+            type: string
+            format: email
+            example: user@example.com
+          password:
+            type: string
+            example: mypassword123
+responses:
+  201:
+    description: Successful registration
+  400:
+    description: Bad Request - Invalid input
+  409:
+    description: Conflict - Email already registered

@@ -1,0 +1,33 @@
+tags:
+  - name: auth
+    description: User authentication
+summary: Refresh access token
+operationId: refreshAccessToken
+description: |
+  This endpoint allows the user to refresh their access token using the refresh token.
+  The refresh token must be valid and not expired.
+security: []
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          refreshToken:
+            type: string
+            example: your-refresh-token-here
+responses:
+  200:
+    description: New access token issued
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            accessToken:
+              type: string
+  400:
+    description: Bad Request - Missing refresh token
+  401:
+    description: Unauthorized - Invalid or expired refresh token

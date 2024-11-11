@@ -1,0 +1,67 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Contacts Management API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  description: API для управління контактами, що дозволяє створювати, оновлювати, отримувати та видаляти контакти.
+tags:
+  - name: contacts
+    description: Operations related to contacts
+  - name: auth
+    description: Operations related to user authentication and authorization
+servers:
+  - url: http://localhost:3000
+  - url: <посилання на задеплоєний сайт>
+paths:
+  /contacts:
+    get:
+      $ref: '../src/swagger/paths/contacts/get.yaml'
+    post:
+      $ref: '../src/swagger/paths/contacts/post.yaml'
+  /contacts/{contactId}:
+    get:
+      $ref: '../src/swagger/paths/contacts/{contactId}/get.yaml'
+    patch:
+      $ref: '../src/swagger/paths/contacts/{contactId}/patch.yaml'
+    delete:
+      $ref: '../src/swagger/paths/contacts/{contactId}/delete.yaml'
+  /auth/register:
+    $ref: '../src/swagger/paths/auth/register.yaml'
+  /auth/login:
+    $ref: '../src/swagger/paths/auth/login.yaml'
+  /auth/logout:
+    $ref: '../src/swagger/paths/auth/logout.yaml'
+  /auth/send-reset-email:
+    $ref: '../src/swagger/paths/auth/send-reset-email.yaml'
+  /auth/reset-password:
+    $ref: '../src/swagger/paths/auth/reset-password.yaml'
+  /auth/refresh-token:
+    $ref: '../src/swagger/paths/auth/refresh-token.yaml' # Додано для оновлення токена
+
+components:
+  schemas:
+    Contact:
+      $ref: '../src/swagger/components/schemas/Contact.yaml'
+    ContactCreate:
+      $ref: '../src/swagger/components/schemas/ContactCreate.yaml'
+    ContactUpdate:
+      $ref: '../src/swagger/components/schemas/ContactUpdate.yaml'
+    AuthCredentials:
+      $ref: '../src/swagger/components/schemas/AuthCredentials.yaml'
+    PasswordReset:
+      $ref: '../src/swagger/components/schemas/PasswordReset.yaml'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Unauthorized:
+      description: Unauthorized - missing or invalid token
+    NotFound:
+      description: Resource not found
+
+security:
+  - bearerAuth: []
