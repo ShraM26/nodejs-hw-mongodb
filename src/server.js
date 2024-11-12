@@ -1,3 +1,4 @@
+
 import express from 'express';
 import cors from 'cors';
 import pino from 'pino';
@@ -7,8 +8,8 @@ import contactRoutes from './routes/contactRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import errorHandler from './middlewares/errorHandler.js';
 import notFoundHandler from './middlewares/notFoundHandler.js';
-import swaggerUi from 'swagger-ui-express';  // Імпортуємо swagger-ui-express
-import YAML from 'yamljs';  // Імпортуємо yamljs для завантаження OpenAPI YAML файлу
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
 import path from 'path';
 
 dotenv.config();
@@ -16,18 +17,18 @@ dotenv.config();
 export function setupServer() {
   const app = express();
 
-  // Додаємо середовище для CORS, JSON та cookies
+  // Middleware для CORS, JSON та cookies
   app.use(cors());
   app.use(express.json());
   app.use(cookieParser());
 
-  // Додаємо роути для контактів та авторизації
+  // Роутинг для контактів та авторизації
   app.use('/auth', authRoutes);
   app.use('/contacts', contactRoutes);
 
-  // Налаштовуємо Swagger UI
-  const swaggerDocument = YAML.load(path.join('docs', 'openapi.yaml')); // Завантажуємо OpenAPI YAML файл
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));  // Додаємо роут для /api-docs
+  // Налаштування Swagger UI
+  const swaggerDocument = YAML.load(path.resolve('src', 'docs', 'openapi.yaml'));  // Вказуємо абсолютний шлях до openapi.yaml
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   // Логування запитів
   const logger = pino();
@@ -36,12 +37,11 @@ export function setupServer() {
     next();
   });
 
-  // Обробка невідомих запитів
+  // Обробка невідомих маршрутів та помилок
   app.use(notFoundHandler);
-  // Обробка помилок
   app.use(errorHandler);
 
-  // Налаштовуємо сервер
+  // Налаштування порту сервера
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
