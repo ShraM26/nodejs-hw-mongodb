@@ -6,11 +6,13 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   description: API для управління контактами, що дозволяє створювати, оновлювати, отримувати та видаляти контакти.
+
 tags:
   - name: contacts
     description: Operations related to contacts
   - name: auth
     description: Operations related to user authentication and authorization
+
 servers:
   - url: http://localhost:3000
   - url: https://contacts-app1-ceqm.onrender.com
@@ -18,37 +20,41 @@ servers:
 paths:
   /contacts:
     get:
-      $ref: './src/swagger/components/paths/contacts/get.yaml'
+      $ref: '../src/swagger/components/paths/contacts/get.yaml'
     post:
-      $ref: './src/swagger/components/paths/contacts/post.yaml'
+      $ref: '../src/swagger/components/paths/contacts/post.yaml'
   /contacts/{contactId}:
     get:
       $ref: './src/swagger/components/paths/contacts/get.yaml'
     patch:
       $ref: './src/swagger/components/paths/contacts/patch.yaml'
     delete:
-      $ref: '../src/swagger/components/paths/contacts/delete.yaml'
+      $ref: './src/swagger/components/paths/contacts/delete.yaml'
   /auth/register:
-    $ref: '../src/swagger/components/paths/auth/register.yaml'
+    post:
+      $ref: './src/swagger/components/paths/auth/register.yaml'
   /auth/login:
-    $ref: '../src/swagger/components/paths/auth/login.yaml'
+    post:
+      $ref: './src/swagger/components/paths/auth/login.yaml'
   /auth/logout:
-    $ref: '../src/swagger/components/paths/auth/logout.yaml'
+    post:
+      $ref: './src/swagger/components/paths/auth/logout.yaml'
   /auth/refresh-token:
-    $ref: '../src/swagger/components/paths/auth/refresh-token.yaml'
+    post:
+      $ref: './src/swagger/components/paths/auth/refresh-token.yaml'
 
 components:
   schemas:
     Contact:
       $ref: '../src/swagger/components/schemas/Contact.yaml'
     ContactCreate:
-      $ref: '../src/swagger/components/schemas/ContactCreate.yaml'
+      $ref: './src/swagger/components/schemas/ContactCreate.yaml'
     ContactUpdate:
-      $ref: '../src/swagger/components/schemas/ContactUpdate.yaml'
+      $ref: './src/swagger/components/schemas/ContactUpdate.yaml'
     AuthCredentials:
-      $ref: '../src/swagger/components/schemas/AuthCredentials.yaml'
+      $ref: './src/swagger/components/schemas/AuthCredentials.yaml'
     PasswordReset:
-      $ref: '../src/swagger/components/schemas/PasswordReset.yaml'
+      $ref: './src/swagger/components/schemas/PasswordReset.yaml'
   securitySchemes:
     bearerAuth:
       type: http
