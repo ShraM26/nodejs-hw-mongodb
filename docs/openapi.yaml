@@ -13,32 +13,29 @@ tags:
     description: Operations related to user authentication and authorization
 servers:
   - url: http://localhost:3000
-  - url: <посилання на задеплоєний сайт>
+  - url: https://contacts-app1-ceqm.onrender.com
+
 paths:
   /contacts:
     get:
-      $ref: '../src/swagger/paths/contacts/get.yaml'
+      $ref: '../src/swagger/components/paths/contacts/get.yaml'
     post:
-      $ref: '../src/swagger/paths/contacts/post.yaml'
+      $ref: '../src/swagger/components/paths/contacts/post.yaml'
   /contacts/{contactId}:
     get:
-      $ref: '../src/swagger/paths/contacts/{contactId}/get.yaml'
+      $ref: '../src/swagger/components/paths/contacts/get.yaml'
     patch:
-      $ref: '../src/swagger/paths/contacts/{contactId}/patch.yaml'
+      $ref: '../src/swagger/components/paths/contacts/patch.yaml'
     delete:
-      $ref: '../src/swagger/paths/contacts/{contactId}/delete.yaml'
+      $ref: '../src/swagger/components/paths/contacts/delete.yaml'
   /auth/register:
-    $ref: '../src/swagger/paths/auth/register.yaml'
+    $ref: '../src/swagger/components/paths/auth/register.yaml'
   /auth/login:
-    $ref: '../src/swagger/paths/auth/login.yaml'
+    $ref: '../src/swagger/components/paths/auth/login.yaml'
   /auth/logout:
-    $ref: '../src/swagger/paths/auth/logout.yaml'
-  /auth/send-reset-email:
-    $ref: '../src/swagger/paths/auth/send-reset-email.yaml'
-  /auth/reset-password:
-    $ref: '../src/swagger/paths/auth/reset-password.yaml'
+    $ref: '../src/swagger/components/paths/auth/logout.yaml'
   /auth/refresh-token:
-    $ref: '../src/swagger/paths/auth/refresh-token.yaml' # Додано для оновлення токена
+    $ref: '../src/swagger/components/paths/auth/refresh-token.yaml'
 
 components:
   schemas:
