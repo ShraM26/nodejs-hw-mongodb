@@ -27,7 +27,7 @@ export function setupServer() {
   app.use('/contacts', contactRoutes);
 
   // Налаштування Swagger UI
-  const swaggerDocument = YAML.load(path.resolve('src', 'docs', 'openapi.yaml'));  // Вказуємо абсолютний шлях до openapi.yaml
+  const swaggerDocument = YAML.load(path.resolve('docs', 'openapi.yaml'));  // Вказуємо абсолютний шлях до openapi.yaml
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   // Логування запитів
