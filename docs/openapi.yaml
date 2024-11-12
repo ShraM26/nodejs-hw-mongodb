@@ -18,14 +18,14 @@ servers:
 paths:
   /contacts:
     get:
-      $ref: '../src/swagger/components/paths/contacts/get.yaml'
+      $ref: './src/swagger/components/paths/contacts/get.yaml'
     post:
-      $ref: '../src/swagger/components/paths/contacts/post.yaml'
+      $ref: './src/swagger/components/paths/contacts/post.yaml'
   /contacts/{contactId}:
     get:
-      $ref: '../src/swagger/components/paths/contacts/get.yaml'
+      $ref: './src/swagger/components/paths/contacts/get.yaml'
     patch:
-      $ref: '../src/swagger/components/paths/contacts/patch.yaml'
+      $ref: './src/swagger/components/paths/contacts/patch.yaml'
     delete:
       $ref: '../src/swagger/components/paths/contacts/delete.yaml'
   /auth/register:
