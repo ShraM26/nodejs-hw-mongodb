@@ -8,9 +8,8 @@ import contactRoutes from './routes/contactRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import errorHandler from './middlewares/errorHandler.js';
 import notFoundHandler from './middlewares/notFoundHandler.js';
-import swaggerUi from 'swagger-ui-express';
-import YAML from 'yamljs';
-import path from 'path';
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
+import { UPLOAD_DIR } from './constants/constants.js';
 
 dotenv.config();
 
@@ -27,10 +26,8 @@ export function setupServer() {
   app.use('/contacts', contactRoutes);
 
   // Налаштування Swagger UI
- 
-
-  const swaggerDocument = YAML.load(path.resolve('docs', 'openapi.yaml'));  // Вказуємо абсолютний шлях до openapi.yaml
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  app.use('/uploads', express.static(UPLOAD_DIR));
+app.use('/api-docs', swaggerDocs());
 
   // Логування запитів
   const logger = pino();

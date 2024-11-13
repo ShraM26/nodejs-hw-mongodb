@@ -1,226 +1,60 @@
-openapi: 3.0.0 # змінено на версію 3.0.0 для сумісності
-
+openapi: 3.1.0
 info:
   version: 1.0.0
-  title: Contacts Management API
+  title: Contacts App
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  description: API для управління контактами, що дозволяє створювати, оновлювати, отримувати та видаляти контакти.
-
+  description: This is a documentation of contacts app
 tags:
-  - name: contacts
-    description: Operations related to contacts
-  - name: auth
-    description: Operations related to user authentication and authorization
-
+  - name: Contacts
+    description: Contacts operations
+  - name: Auth
+    description: Auth operations
 servers:
   - url: http://localhost:3000
   - url: https://contacts-app1-ceqm.onrender.com
-
 paths:
   /contacts:
     get:
-      summary: Retrieve all contacts
-      operationId: getContacts
-      responses:
-        200:
-          description: A list of contacts
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Contact'
+      $ref: ../swagger/paths/contacts/get.yaml
     post:
-      summary: Create a new contact
-      operationId: createContact
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ContactCreate'
-      responses:
-        201:
-          description: Contact created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Contact'
-
+      $ref: ../swagger/paths/contacts/post.yaml
   /contacts/{contactId}:
-    parameters:
-      - in: path
-        name: contactId
-        required: true
-        schema:
-          type: string
     get:
-      summary: Retrieve a contact by ID
-      operationId: getContactById
-      responses:
-        200:
-          description: A single contact
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Contact'
-    patch:
-      summary: Update a contact by ID
-      operationId: updateContact
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ContactUpdate'
-      responses:
-        200:
-          description: Contact updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Contact'
+      $ref: ../swagger/paths/contacts/{contactId}/get.yaml
     delete:
-      summary: Delete a contact by ID
-      operationId: deleteContact
-      responses:
-        200:
-          description: Contact deleted
-
+      $ref: ../swagger/paths/contacts/{contactId}/delete.yaml
+    patch:
+      $ref: ../swagger/paths/contacts/{contactId}/patch.yaml
   /auth/register:
     post:
-      summary: User registration
-      operationId: registerUser
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuthCredentials'
-      responses:
-        201:
-          description: User successfully registered
-
+      $ref: ../swagger/paths/auth/register/post.yaml
   /auth/login:
     post:
-      summary: User login
-      operationId: loginUser
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuthCredentials'
-      responses:
-        200:
-          description: Successful login
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  accessToken:
-                    type: string
-                  refreshToken:
-                    type: string
-        400:
-          description: Bad request
-        401:
-          description: Unauthorized
-
+      $ref: ../swagger/paths/auth/login/post.yaml
   /auth/logout:
     post:
-      summary: User logout
-      operationId: logoutUser
-      responses:
-        200:
-          description: Successfully logged out
-
-  /auth/refresh-token:
+      $ref: ../swagger/paths/auth/logout/post.yaml
+  /auth/refresh:
     post:
-      summary: Refresh access token
-      operationId: refreshToken
-      responses:
-        200:
-          description: New access token
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  accessToken:
-                    type: string
-        400:
-          description: Bad request
-
+      $ref: ../swagger/paths/auth/refresh/post.yaml
+  /auth/send-reset-email:
+    post:
+      $ref: ../swagger/paths/auth/send-reset-email/post.yaml
+  /auth/reset-pwd:
+    post:
+      $ref: ../swagger/paths/auth/reset-pwd/post.yaml
 components:
-  schemas:
-    Contact:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        email:
-          type: string
-        phone:
-          type: string
-        address:
-          type: string
-    ContactCreate:
-      type: object
-      properties:
-        name:
-          type: string
-        email:
-          type: string
-        phone:
-          type: string
-        address:
-          type: string
-    ContactUpdate:
-      type: object
-      properties:
-        name:
-          type: string
-        email:
-          type: string
-        phone:
-          type: string
-        address:
-          type: string
-    AuthCredentials:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-        password:
-          type: string
-    PasswordReset:
-      type: object
-      properties:
-        email:
-          type: string
-        resetToken:
-          type: string
-        newPassword:
-          type: string
-
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT
-
-  responses:
-    Unauthorized:
-      description: Unauthorized - missing or invalid token
-    NotFound:
-      description: Resource not found
-
-security:
-  - bearerAuth: []
+    cookieAuthUserId:
+      type: apiKey
+      in: cookie
+      name: sessionId
+    cookieAuthRefreshToken:
+      type: apiKey
+      in: cookie
+      name: refreshToken
