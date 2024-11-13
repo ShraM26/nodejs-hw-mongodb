@@ -12,7 +12,7 @@
   "preview-docs": "redocly preview-docs"
 },
   "keywords": [],
-  "author": "Vitaliy Shram <vitalya-shramko@yandex.ru>",
+  "author": "Vitaliy Shramko <vitalya-shramko@yandex.ru>",
   "license": "ISC",
   "description": "",
   "devDependencies": {
