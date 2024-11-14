@@ -16,6 +16,7 @@ parameters:
 responses:
   '204':
     description: Successfully deleted the contact. No content in response.
+    content: {}
   '404':
     $ref: ../../../components/responses/contacts/404.yaml
   '401':

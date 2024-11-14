@@ -16,40 +16,40 @@ content:
           example: BadRequestError
         data:
           type: object
-          required:
-            - message
-            - errors
           properties:
-            message:
-              type: string
-              example: Bad request
-            errors:
-              type: array
-              description: List of validation errors
-              items:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Description of the validation error
-                    example: '"name" is required'
-                  path:
-                    type: array
-                    description: Path of the field that caused the validation error
-                    items:
-                      type: string
-                    example: ['name']
-                  type:
-                    type: string
-                    description: Type of the validation error
-                    example: 'any.required'
-                  context:
+            details:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Bad request
+                errors:
+                  type: array
+                  description: List of validation errors
+                  items:
                     type: object
-                    description: Additional context provided by Joi
                     properties:
-                      label:
+                      message:
                         type: string
-                        example: 'name'
-                      key:
+                        description: Description of the validation error
+                        example: '"name" is required'
+                      path:
+                        type: array
+                        description: Path of the field that caused the validation error
+                        items:
+                          type: string
+                        example: ['name']
+                      type:
                         type: string
-                        example: 'name'
+                        description: Type of the validation error
+                        example: 'any.required'
+                      context:
+                        type: object
+                        description: Additional context provided by Joi
+                        properties:
+                          label:
+                            type: string
+                            example: 'name'
+                          key:
+                            type: string
+                            example: 'name'
